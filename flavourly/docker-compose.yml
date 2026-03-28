@@ -1,0 +1,19 @@
+version: '3.9'
+
+services:
+  flavourly:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: flavourly-app
+    ports:
+      - "8080:8080"
+    volumes:
+      # Persist the SQLite database between container restarts
+      - flavourly-db:/app/backend/instance
+    environment:
+      - FLASK_ENV=production
+    restart: unless-stopped
+
+volumes:
+  flavourly-db:

@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flavourly — Discover, Cook & Order Delicious Food</title>
+  <meta name="description" content="Flavourly is your go-to platform for discovering curated recipes and ordering fresh, restaurant-quality food delivered to your door." />
+  <link rel="stylesheet" href="index.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🍽️</text></svg>" />
+</head>
+<body>
+
+<!-- ── TOAST CONTAINER ──────────────────────────────────────────────────── -->
+<div id="toast-container"></div>
+
+<!-- ── CART OVERLAY ─────────────────────────────────────────────────────── -->
+<div id="cart-overlay" class="cart-overlay" onclick="closeCart()"></div>
+
+<!-- ── NAVBAR ───────────────────────────────────────────────────────────── -->
+<nav id="navbar">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo" onclick="navigateTo('home')">
+      🍽️ Flavourly<span class="dot">.</span>
+    </a>
+    <div class="nav-search">
+      <span class="search-icon">🔍</span>
+      <input type="search" id="nav-search-input" placeholder="Search recipes, cuisines…" oninput="handleNavSearch(this.value)" />
+    </div>
+    <ul class="nav-links" id="nav-links">
+      <li><a class="nav-link active" data-page="home" href="javascript:void(0)" onclick="navigateTo('home')">Home</a></li>
+      <li><a class="nav-link" data-page="recipes" href="javascript:void(0)" onclick="navigateTo('recipes')">Recipes</a></li>
+      <li><a class="nav-link" data-page="order" href="javascript:void(0)" onclick="navigateTo('order')">Order</a></li>
+      <li><a class="nav-link" data-page="favourites" href="javascript:void(0)" onclick="navigateTo('favourites')">Favourites</a></li>
+      <li><a class="nav-link" data-page="orders-history" href="javascript:void(0)" onclick="navigateTo('orders-history')">My Orders</a></li>
+      <li><a class="nav-link" data-page="about" href="javascript:void(0)" onclick="navigateTo('about')">About</a></li>
+      <li id="admin-nav-link" class="hidden"><a class="nav-link" data-page="admin" href="javascript:void(0)" onclick="navigateTo('admin')">Admin</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button class="cart-btn" onclick="toggleCart()" title="Cart" id="cart-btn-nav">
+        🛒<span class="cart-count hidden" id="cart-count">0</span>
+      </button>
+      <div id="user-avatar-btn" class="hidden">
+        <div class="avatar-btn" onclick="toggleUserMenu()" id="user-avatar" title="Profile">U</div>
+        <div id="user-menu" class="hidden" style="position:absolute;right:1.5rem;top:4.2rem;background:var(--surface);border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);border:1px solid var(--border);padding:.5rem;min-width:180px;z-index:1000;">
+          <div style="padding:.75rem 1rem;border-bottom:1px solid var(--border);">
+            <div id="user-menu-name" style="font-weight:700;font-size:.9rem;">User</div>
+            <div id="user-menu-email" style="font-size:.75rem;color:var(--text-muted);">user@example.com</div>
+          </div>
+          <button class="btn btn-ghost w-full" style="text-align:left;border-radius:var(--radius-sm);margin-top:.25rem;" onclick="navigateTo('orders-history');toggleUserMenu()">📦 My Orders</button>
+          <button class="btn btn-ghost w-full" style="text-align:left;border-radius:var(--radius-sm);" onclick="navigateTo('favourites');toggleUserMenu()">❤️ Favourites</button>
+          <hr class="divider">
+          <button class="btn btn-ghost w-full" style="text-align:left;border-radius:var(--radius-sm);color:var(--red);" onclick="logout()">🚪 Logout</button>
+        </div>
+      </div>
+      <button id="auth-btn" class="btn btn-primary btn-sm" onclick="openAuthModal()">Sign In</button>
+      <button class="hamburger" id="hamburger" onclick="toggleMobileMenu()">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     HOME PAGE
+══════════════════════════════════════════════════════════════════════════ -->
+<div id="page-home" class="page-section active">
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-inner">
+    <div class="hero-text">
+      <div class="hero-tag">✨ 500+ Curated Recipes</div>
+      <h1 class="font-display">Taste the <span class="accent">World</span>,<br>One Plate at a Time</h1>
+      <p>Discover thousands of handcrafted recipes, order fresh ingredients, and get restaurant-quality meals delivered straight to your door.</p>
+      <div class="hero-actions">
+        <button class="btn btn-primary btn-lg" onclick="navigateTo('recipes')">🍳 Explore Recipes</button>
+        <button class="btn btn-secondary btn-lg" onclick="navigateTo('order')">🛵 Order Now</button>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat"><strong id="hero-recipe-count">18+</strong><span>Recipes</span></div>
+        <div class="hero-stat"><strong>5★</strong><span>Avg Rating</span></div>
+        <div class="hero-stat"><strong>30min</strong><span>Avg Cook Time</span></div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-img-card">
+        <img src="https://images.unsplash.com/photo-1588166524941-3bf61a9c41db?w=400" alt="Butter Chicken" />
+      </div>
+      <div class="hero-img-card">
+        <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400" alt="Grain Bowl" />
+      </div>
+      <div class="hero-img-card">
+        <img src="https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=400" alt="Mango Lassi" />
+      </div>
+      <div class="hero-img-card">
+        <img src="https://images.unsplash.com/photo-1524351199678-941a58a3df50?w=400" alt="Cheesecake" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CATEGORIES -->
+<section id="categories-bar">
+  <div class="categories-scroll" id="home-categories">
+    <button class="category-pill active" onclick="filterHomeCategory(null,this)">🍽️ All</button>
+  </div>
+</section>
+
+<!-- FEATURED RECIPES PREVIEW -->
+<section class="section" style="background:var(--bg)">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">🌟 Featured</div>
+      <h2>Popular Recipes</h2>
+      <p>Handpicked by our chefs — tried, tested, and loved by thousands.</p>
+    </div>
+    <div class="grid-4" id="home-recipes-grid">
+      <!-- filled by JS -->
+    </div>
+    <div class="text-center mt-4">
+      <button class="btn btn-secondary btn-lg" onclick="navigateTo('recipes')">View All Recipes →</button>
+    </div>
+  </div>
+</section>
+
+<!-- WHY US -->
+<section class="section" style="background:var(--surface)">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">✅ Why Flavourly</div>
+      <h2>Everything You Need, in One Place</h2>
+    </div>
+    <div class="grid-3">
+      <div class="card p-2" style="text-align:center;padding:2rem;">
+        <div style="font-size:3rem;margin-bottom:1rem;">👨‍🍳</div>
+        <h3 style="margin-bottom:.5rem;">Expert Chefs</h3>
+        <p style="color:var(--text-muted);font-size:.9rem;">Recipes crafted and quality-tested by professional chefs across the globe.</p>
+      </div>
+      <div class="card p-2" style="text-align:center;padding:2rem;">
+        <div style="font-size:3rem;margin-bottom:1rem;">🚀</div>
+        <h3 style="margin-bottom:.5rem;">Fast Delivery</h3>
+        <p style="color:var(--text-muted);font-size:.9rem;">Order and receive fresh ingredients or prepared meals in under 45 minutes.</p>
+      </div>
+      <div class="card p-2" style="text-align:center;padding:2rem;">
+        <div style="font-size:3rem;margin-bottom:1rem;">🌿</div>
+        <h3 style="margin-bottom:.5rem;">Fresh & Organic</h3>
+        <p style="color:var(--text-muted);font-size:.9rem;">We partner with local farms to bring you the freshest seasonal produce.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div><!-- /page-home -->
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     RECIPES PAGE
+══════════════════════════════════════════════════════════════════════════ -->
+<div id="page-recipes" class="page-section">
+<section id="recipes-section" class="section">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">🍳 Recipes</div>
+      <h2>All Recipes</h2>
+      <p>Filter by category, diet, or cuisine — find your perfect dish.</p>
+    </div>
+    <div class="filter-bar">
+      <div class="search-full">
+        <span class="icon">🔍</span>
+        <input type="search" id="recipe-search" placeholder="Search recipes…" oninput="debounce(loadRecipes, 400)()" />
+      </div>
+      <select id="recipe-category" onchange="loadRecipes()">
+        <option value="">All Categories</option>
+      </select>
+      <select id="recipe-cuisine" onchange="loadRecipes()">
+        <option value="">All Cuisines</option>
+        <option>Indian</option><option>North Indian</option><option>South Indian</option>
+        <option>Italian</option><option>Mediterranean</option><option>Mexican</option>
+        <option>American</option><option>Western</option><option>African</option>
+      </select>
+      <select id="recipe-sort" onchange="loadRecipes()">
+        <option value="newest">Newest</option>
+        <option value="price_asc">Price: Low→High</option>
+        <option value="price_desc">Price: High→Low</option>
+      </select>
+      <div class="filter-toggle-group">
+        <button class="filter-toggle active" id="diet-all" onclick="setDietFilter(null,this)">All</button>
+        <button class="filter-toggle" id="diet-veg" onclick="setDietFilter('true',this)">🌿 Veg</button>
+        <button class="filter-toggle" id="diet-nonveg" onclick="setDietFilter('false',this)">🍗 Non-Veg</button>
+      </div>
+    </div>
+    <div class="grid-4" id="recipes-grid">
+      <!-- filled by JS -->
+    </div>
+    <div id="recipes-empty" class="empty-state hidden">
+      <div class="icon">🔍</div>
+      <h3>No recipes found</h3>
+      <p>Try a different search or filter.</p>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     ORDER PAGE
+══════════════════════════════════════════════════════════════════════════ -->
+<div id="page-order" class="page-section">
+<section id="order-section" class="section">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">🛵 Order Food</div>
+      <h2>Our Menu</h2>
+      <p>Add your favourite items to the cart and order in a few taps.</p>
+    </div>
+    <!-- Category tabs -->
+    <div class="categories-scroll" id="order-categories" style="margin-bottom:2rem;">
+      <button class="category-pill active" onclick="filterOrderCategory(null,this)">🍽️ All</button>
+    </div>
+    <div class="grid-4" id="order-menu-grid">
+      <!-- filled by JS -->
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     FAVOURITES PAGE
+══════════════════════════════════════════════════════════════════════════ -->
+<div id="page-favourites" class="page-section">
+<section id="favourites-section" class="section">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">❤️ Wishlist</div>
+      <h2>Your Favourites</h2>
+      <p>All the recipes you've saved in one place.</p>
+    </div>
+    <div class="grid-4" id="favourites-grid"></div>
+    <div id="favourites-empty" class="empty-state hidden">
+      <div class="icon">❤️</div>
+      <h3>No favourites yet</h3>
+      <p>Tap the ❤️ on any recipe to save it here.</p>
+      <button class="btn btn-primary mt-2" onclick="navigateTo('recipes')">Browse Recipes</button>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     ORDER HISTORY PAGE
+══════════════════════════════════════════════════════════════════════════ -->
+<div id="page-orders-history" class="page-section">
+<section class="section" style="background:var(--bg)">
+  <div class="container" style="max-width:860px;">
+    <div class="section-header">
+      <div class="section-tag">📦 Orders</div>
+      <h2>Order History</h2>
+      <p>Track all your past and current orders.</p>
+    </div>
+    <div id="orders-list"></div>
+    <div id="orders-empty" class="empty-state hidden">
+      <div class="icon">📦</div>
+      <h3>No orders yet</h3>
+      <p>Place an order to see it here.</p>
+      <button class="btn btn-primary mt-2" onclick="navigateTo('order')">Order Now</button>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     ABOUT PAGE
+══════════════════════════════════════════════════════════════════════════ -->
+<div id="page-about" class="page-section">
+<section id="about-section" class="section">
+  <div class="about-inner">
+    <div class="about-text">
+      <div class="section-tag">🌍 About Us</div>
+      <h2>Food Brings <span style="color:var(--orange)">People</span> Together</h2>
+      <p>Flavourly was born from a simple idea: great food should be accessible to everyone. We curate the world's best recipes and partner with top local restaurants to bring you restaurant-quality meals at home.</p>
+      <p>From quick 10-minute breakfasts to elaborate weekend feasts, our platform helps you discover, cook, and order food that makes every meal special.</p>
+      <div class="about-stats">
+        <div class="about-stat"><strong>500+</strong><span>Recipes</span></div>
+        <div class="about-stat"><strong>50K+</strong><span>Happy Users</span></div>
+        <div class="about-stat"><strong>4.9★</strong><span>App Rating</span></div>
+      </div>
+      <button class="btn btn-primary mt-4" onclick="navigateTo('recipes')">Explore Recipes</button>
+    </div>
+    <div class="about-visual">
+      <div class="about-img"><img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400" alt="Food spread" /></div>
+      <div class="about-img"><img src="https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400" alt="Cooking" /></div>
+      <div class="about-img"><img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400" alt="Plated dish" /></div>
+      <div class="about-img"><img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=400" alt="Restaurant" /></div>
+    </div>
+  </div>
+</section>
+<!-- CONTACT section is part of the about page -->
+<section id="contact-section" class="section">
+  <div class="contact-inner">
+    <div class="contact-info">
+      <div class="section-tag">📬 Get in Touch</div>
+      <h2>We'd Love to Hear From You</h2>
+      <p>Have a question, recipe suggestion, or feedback? Drop us a line!</p>
+      <div class="contact-item"><span class="icon">📧</span> hello@flavourly.com</div>
+      <div class="contact-item"><span class="icon">📞</span> +91 98765 43210</div>
+      <div class="contact-item"><span class="icon">📍</span> Bengaluru, Karnataka, India</div>
+      <div class="contact-item"><span class="icon">🕐</span> Mon–Sat, 9AM–9PM IST</div>
+    </div>
+    <div class="contact-form">
+      <h3 style="margin-bottom:1.5rem;font-size:1.2rem;">Send a Message</h3>
+      <form id="contact-form" onsubmit="submitContactForm(event)">
+        <div class="form-row">
+          <div class="input-group"><label>First Name</label><input class="input-field" placeholder="Raj" required /></div>
+          <div class="input-group"><label>Last Name</label><input class="input-field" placeholder="Sharma" /></div>
+        </div>
+        <div class="input-group mt-2"><label>Email</label><input type="email" class="input-field" placeholder="raj@example.com" required /></div>
+        <div class="input-group mt-2"><label>Subject</label><input class="input-field" placeholder="Recipe suggestion…" /></div>
+        <div class="input-group mt-2"><label>Message</label><textarea class="input-field" rows="4" placeholder="Tell us what's on your mind…" required style="resize:vertical;"></textarea></div>
+        <button type="submit" class="btn btn-primary w-full mt-2">🚀 Send Message</button>
+      </form>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     ADMIN PAGE
+══════════════════════════════════════════════════════════════════════════ -->
+<div id="page-admin" class="page-section">
+<section id="admin-section" class="section">
+  <div class="admin-inner">
+    <div class="section-header">
+      <div class="section-tag">⚙️ Admin</div>
+      <h2>Admin Panel</h2>
+    </div>
+    <div class="admin-tabs">
+      <button class="admin-tab active" onclick="switchAdminTab('dashboard',this)">📊 Dashboard</button>
+      <button class="admin-tab" onclick="switchAdminTab('recipes-admin',this)">🍳 Recipes</button>
+      <button class="admin-tab" onclick="switchAdminTab('orders-admin',this)">📦 Orders</button>
+      <button class="admin-tab" onclick="switchAdminTab('users-admin',this)">👥 Users</button>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="admin-tab-dashboard" class="tab-content active">
+      <div class="stat-cards" id="admin-stats"></div>
+    </div>
+
+    <!-- Recipes Admin -->
+    <div id="admin-tab-recipes-admin" class="tab-content">
+      <div class="flex-between mb-2">
+        <h3>Manage Recipes</h3>
+        <button class="btn btn-primary btn-sm" onclick="openAddRecipeModal()">+ Add Recipe</button>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="data-table" id="admin-recipes-table">
+          <thead><tr><th>Image</th><th>Title</th><th>Category</th><th>Cuisine</th><th>Price</th><th>Rating</th><th>Actions</th></tr></thead>
+          <tbody id="admin-recipes-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Orders Admin -->
+    <div id="admin-tab-orders-admin" class="tab-content">
+      <h3 class="mb-2">All Orders</h3>
+      <div style="overflow-x:auto;">
+        <table class="data-table" id="admin-orders-table">
+          <thead><tr><th>#</th><th>User</th><th>Items</th><th>Total</th><th>Status</th><th>Date</th><th>Action</th></tr></thead>
+          <tbody id="admin-orders-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Users Admin -->
+    <div id="admin-tab-users-admin" class="tab-content">
+      <h3 class="mb-2">All Users</h3>
+      <div style="overflow-x:auto;">
+        <table class="data-table">
+          <thead><tr><th>ID</th><th>Username</th><th>Email</th><th>Role</th><th>Joined</th></tr></thead>
+          <tbody id="admin-users-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════════════════════════════════════ -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div>
+        <div class="footer-logo">🍽️ Flavourly.</div>
+        <p style="font-size:.85rem;max-width:260px;line-height:1.65;">Your go-to platform for discovering, cooking, and ordering amazing food from around the world.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Explore</h4>
+        <a href="javascript:void(0)" onclick="navigateTo('recipes')">Recipes</a>
+        <a href="javascript:void(0)" onclick="navigateTo('order')">Order Food</a>
+        <a href="javascript:void(0)" onclick="navigateTo('favourites')">Favourites</a>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <a href="javascript:void(0)" onclick="navigateTo('about')">About Us</a>
+        <a href="javascript:void(0)" onclick="navigateTo('about')">Contact</a>
+        <a href="#">Blog</a>
+      </div>
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Cookie Policy</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 Flavourly. Made with ❤️ and 🌶️</p>
+    </div>
+  </div>
+</footer>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     CART SIDEBAR
+══════════════════════════════════════════════════════════════════════════ -->
+<aside id="cart-sidebar">
+  <div class="cart-header">
+    <h3>🛒 Your Cart</h3>
+    <button onclick="closeCart()" class="modal-close">✕</button>
+  </div>
+  <div class="cart-body" id="cart-body">
+    <div class="cart-empty"><div class="icon">🛒</div><p>Your cart is empty</p></div>
+  </div>
+  <div class="cart-footer" id="cart-footer" style="display:none;">
+    <div class="cart-subtotal"><span>Subtotal</span><span id="cart-subtotal">₹0</span></div>
+    <div class="cart-subtotal"><span>Delivery fee</span><span>₹49</span></div>
+    <div class="cart-total"><span>Total</span><span id="cart-total-val">₹49</span></div>
+    <button class="btn btn-primary w-full" onclick="openCheckout()">Proceed to Checkout →</button>
+  </div>
+</aside>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     MODALS
+══════════════════════════════════════════════════════════════════════════ -->
+
+<!-- AUTH MODAL -->
+<div id="auth-modal" class="modal-overlay hidden" onclick="handleOverlayClick(event,'auth-modal')">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="auth-modal-title">Welcome to Flavourly</h3>
+      <button class="modal-close" onclick="closeModal('auth-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="auth-tabs">
+        <div class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Sign In</div>
+        <div class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">Create Account</div>
+      </div>
+      <!-- Login -->
+      <div id="auth-login-form">
+        <form class="form-stack" onsubmit="doLogin(event)">
+          <div class="input-group"><label>Email</label><input id="login-email" type="email" class="input-field" placeholder="you@example.com" required /></div>
+          <div class="input-group"><label>Password</label><input id="login-password" type="password" class="input-field" placeholder="••••••••" required /></div>
+          <button type="submit" class="btn btn-primary w-full" id="login-btn">Sign In</button>
+          <p style="text-align:center;font-size:.82rem;color:var(--text-muted);">Test: admin@flavourly.com / admin123</p>
+        </form>
+      </div>
+      <!-- Register -->
+      <div id="auth-register-form" class="hidden">
+        <form class="form-stack" onsubmit="doRegister(event)">
+          <div class="input-group"><label>Username</label><input id="reg-username" class="input-field" placeholder="foodielover" required /></div>
+          <div class="input-group"><label>Email</label><input id="reg-email" type="email" class="input-field" placeholder="you@example.com" required /></div>
+          <div class="input-group"><label>Password</label><input id="reg-password" type="password" class="input-field" placeholder="min 6 characters" required minlength="6" /></div>
+          <button type="submit" class="btn btn-primary w-full" id="register-btn">Create Account</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RECIPE DETAIL MODAL -->
+<div id="recipe-modal" class="modal-overlay hidden" onclick="handleOverlayClick(event,'recipe-modal')">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <h3 id="recipe-modal-title">Recipe Detail</h3>
+      <button class="modal-close" onclick="closeModal('recipe-modal')">✕</button>
+    </div>
+    <div class="modal-body" id="recipe-modal-body">
+      <div class="flex-center" style="padding:3rem;"><div class="spinner"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- CHECKOUT MODAL -->
+<div id="checkout-modal" class="modal-overlay hidden" onclick="handleOverlayClick(event,'checkout-modal')">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Checkout</h3>
+      <button class="modal-close" onclick="closeModal('checkout-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="checkout-items-list"></div>
+      <hr class="divider">
+      <div id="checkout-total-display"></div>
+      <div class="input-group mt-2">
+        <label>Delivery Address</label>
+        <textarea id="checkout-address" class="input-field" rows="3" placeholder="123 Main Street, Bengaluru, Karnataka 560001" required></textarea>
+      </div>
+      <button class="btn btn-primary w-full mt-2" onclick="placeOrder()">🚀 Place Order</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD RECIPE MODAL (Admin) -->
+<div id="add-recipe-modal" class="modal-overlay hidden" onclick="handleOverlayClick(event,'add-recipe-modal')">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <h3 id="add-recipe-modal-title">Add New Recipe</h3>
+      <button class="modal-close" onclick="closeModal('add-recipe-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="add-recipe-form" class="form-stack" onsubmit="submitRecipeForm(event)">
+        <input type="hidden" id="edit-recipe-id" value="" />
+        <div class="form-row">
+          <div class="input-group"><label>Title *</label><input id="r-title" class="input-field" required /></div>
+          <div class="input-group"><label>Category *</label><select id="r-category" class="input-field"></select></div>
+        </div>
+        <div class="input-group"><label>Description</label><textarea id="r-desc" class="input-field" rows="2"></textarea></div>
+        <div class="form-row">
+          <div class="input-group"><label>Image URL</label><input id="r-image" class="input-field" placeholder="https://…" /></div>
+          <div class="input-group"><label>Cuisine</label><input id="r-cuisine" class="input-field" /></div>
+        </div>
+        <div class="form-row">
+          <div class="input-group"><label>Price (₹)</label><input id="r-price" type="number" class="input-field" value="0" min="0" /></div>
+          <div class="input-group"><label>Cook Time (min)</label><input id="r-cook-time" type="number" class="input-field" value="30" min="1" /></div>
+          <div class="input-group"><label>Servings</label><input id="r-servings" type="number" class="input-field" value="2" min="1" /></div>
+        </div>
+        <div class="input-group">
+          <label>Diet</label>
+          <select id="r-is-veg" class="input-field"><option value="true">🌿 Vegetarian</option><option value="false">🍗 Non-Vegetarian</option></select>
+        </div>
+        <div class="input-group"><label>Ingredients (comma separated)</label><textarea id="r-ingredients" class="input-field" rows="2"></textarea></div>
+        <div class="input-group"><label>Steps (semicolon separated)</label><textarea id="r-steps" class="input-field" rows="3"></textarea></div>
+        <button type="submit" class="btn btn-primary w-full">Save Recipe</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- REVIEW MODAL -->
+<div id="review-modal" class="modal-overlay hidden" onclick="handleOverlayClick(event,'review-modal')">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Write a Review</h3>
+      <button class="modal-close" onclick="closeModal('review-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <form class="form-stack" onsubmit="submitReview(event)">
+        <input type="hidden" id="review-recipe-id" />
+        <div class="input-group">
+          <label>Rating</label>
+          <div id="star-picker" class="stars" style="font-size:1.8rem;gap:.25rem;cursor:pointer;">
+            <span data-val="1">⭐</span><span data-val="2">⭐</span>
+            <span data-val="3">⭐</span><span data-val="4">⭐</span><span data-val="5">⭐</span>
+          </div>
+          <input type="hidden" id="review-rating" value="5" />
+        </div>
+        <div class="input-group"><label>Comment</label><textarea id="review-comment" class="input-field" rows="3" placeholder="Share your experience…"></textarea></div>
+        <button type="submit" class="btn btn-primary w-full">Submit Review</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
